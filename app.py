@@ -2,12 +2,37 @@ from openai import OpenAI
 import streamlit as st
 from prompts.system_prompts import SYSTEM_PROMPT_1_A, SYSTEM_PROMPT_1_B
 from audiorecorder import audiorecorder
+from pymongo import MongoClient
+import datetime
+
 
 st.title("Pensieve")
 
+# open ai client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# mongo client
+mongo_client = MongoClient(st.secrets["MONGO_URI"])
+db = mongo_client["pensieve_001"]
+collection = db["memories"]
+
 chat_container = st.container(border=True)
+
+if "memory_doc_id" not in st.session_state:
+    # Debugging: Print message
+    st.write("Creating new memory document...")
+
+    # create new memory doc
+    new_memory_doc = collection.insert_one(
+        {
+            "test_key": "initial_test_with_g_ma_001",
+            "created_timestamp": datetime.datetime.now(datetime.UTC),
+        }
+    )
+
+    # save id
+    st.session_state["memory_doc_id"] = new_memory_doc.inserted_id
+
 
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o"
