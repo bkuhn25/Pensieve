@@ -15,7 +15,7 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "system", "content": SYSTEM_PROMPT_1_A},
-        {"role": "assistant", "content": "Tell me about your wedding day."},
+        {"role": "assistant", "content": "Tell me about a skateboarding accident."},
     ]
 with chat_container:
     for message in st.session_state.messages[1:]:
@@ -32,16 +32,20 @@ audio = audiorecorder(
 )
 
 if len(audio) > 0:
-    # To play audio in frontend:
-    st.audio(audio.export().read())
 
-    # To save audio to a file
-    audio.export("audio.wav", format="wav")
+    with chat_container:
+        with st.spinner("Transcribing audio..."):
+            # # To play audio in frontend:
+            # st.audio(audio.export().read())
 
-    # make request to whisper to transcribe the audio
-    audio_file = open("audio.wav", "rb")
-    transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
-    prompt = transcript.text
+            # To save audio to a file
+            audio.export("audio.wav", format="wav")
+            # make request to whisper to transcribe the audio
+            audio_file = open("audio.wav", "rb")
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1", file=audio_file
+            )
+            prompt = transcript.text
 
     if prompt:
         st.session_state.messages.append({"role": "user", "content": prompt})
