@@ -6,8 +6,6 @@ st.title("Pensieve")
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# TODO - can provide the topic and let the llm come up with the initial question to the person
-
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-3.5-turbo"
 
@@ -26,18 +24,13 @@ if prompt := st.chat_input("What is up?"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        # compile messages for llm
-        messages_for_llm = [
-            {"role": m["role"], "content": m["content"]}
-            for m in st.session_state.messages
-        ]
-
-        # add system prompt to beginning of messages list
-        messages_for_llm.insert(0, {"role": "system", "content": SYSTEM_PROMPT_1_A})
-
         stream = client.chat.completions.create(
             model=st.session_state["openai_model"],
-            messages=messages_for_llm,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT_1_A},
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ],
             stream=True,
         )
         response = st.write_stream(stream)
