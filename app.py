@@ -19,9 +19,6 @@ collection = db["memories"]
 chat_container = st.container(border=True)
 
 if "memory_doc_id" not in st.session_state:
-    # Debugging: Print message
-    st.write("Creating new memory document...")
-
     # create new memory doc
     new_memory_doc = collection.insert_one(
         {
@@ -94,3 +91,9 @@ if len(audio) > 0:
                 )
                 response = st.write_stream(stream)
         st.session_state.messages.append({"role": "assistant", "content": response})
+
+        # update memory db document with updated chat history
+        collection.update_one(
+            {"_id": st.session_state["memory_doc_id"]},
+            {"$set": {"chat_history": st.session_state.messages}},
+        )
