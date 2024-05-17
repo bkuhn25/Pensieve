@@ -1,6 +1,6 @@
 from openai import OpenAI
 import streamlit as st
-from prompts.system_prompts import SYSTEM_PROMPT_1_A
+from prompts.system_prompts import SYSTEM_PROMPT_1_A, SYSTEM_PROMPT_1_B
 from audiorecorder import audiorecorder
 
 st.title("Pensieve")
@@ -14,8 +14,11 @@ if "openai_model" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "system", "content": SYSTEM_PROMPT_1_A},
-        {"role": "assistant", "content": "Tell me about a skateboarding accident."},
+        {"role": "system", "content": SYSTEM_PROMPT_1_B},
+        {
+            "role": "assistant",
+            "content": "Tell me about your wedding day.",
+        },
     ]
 with chat_container:
     for message in st.session_state.messages[1:]:
