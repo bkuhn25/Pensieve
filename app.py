@@ -1,7 +1,7 @@
 from openai import OpenAI
 import streamlit as st
 from prompts.system_prompts import SYSTEM_PROMPT_1_A
-from st_audiorec import st_audiorec
+from audiorecorder import audiorecorder
 
 st.title("Pensieve")
 
@@ -40,7 +40,20 @@ if prompt := st.chat_input("What is up?"):
 
 with st.container():
 
-    wav_audio_data = st_audiorec()
+    if st.button("Submit recording"):
+        st.write("Recording submitted")
 
-    if wav_audio_data is not None:
-        st.audio(wav_audio_data, format="audio/wav")
+    audio = audiorecorder(
+        start_prompt="",
+        stop_prompt="",
+        pause_prompt="",
+        show_visualizer=True,
+        key=None,
+    )
+
+    if len(audio) > 0:
+        # To play audio in frontend:
+        st.audio(audio.export().read())
+
+        # To save audio to a file, use pydub export method:
+        audio.export("audio.wav", format="wav")
