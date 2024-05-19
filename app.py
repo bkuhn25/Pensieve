@@ -6,6 +6,7 @@ from pymongo import MongoClient
 import datetime
 from llm_functionality.transcription import (
     transcribe_audio,
+    transcribe_long_audio,
     AUDIO_FILE_NAME,
     AUDIO_FILE_TYPE,
 )
@@ -72,7 +73,7 @@ if len(audio) > 0:
             # To save audio to a file
             audio.export(AUDIO_FILE_NAME, format=AUDIO_FILE_TYPE)
             # make request to whisper to transcribe the audio
-            prompt = transcribe_audio(AUDIO_FILE_NAME, client)
+            prompt = transcribe_long_audio(AUDIO_FILE_NAME, client)
 
     if prompt:
         st.session_state.messages.append({"role": "user", "content": prompt})
