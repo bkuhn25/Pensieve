@@ -4,6 +4,12 @@ from prompts.system_prompts import SYSTEM_PROMPT_1_A, SYSTEM_PROMPT_1_B
 from audiorecorder import audiorecorder
 from pymongo import MongoClient
 import datetime
+from llm_functionality.transcription import (
+    transcribe_audio,
+    AUDIO_FILE_NAME,
+    AUDIO_FILE_TYPE,
+)
+import os
 
 
 st.title("Pensieve")
@@ -64,13 +70,9 @@ if len(audio) > 0:
             # st.audio(audio.export().read())
 
             # To save audio to a file
-            audio.export("audio.wav", format="wav")
+            audio.export(AUDIO_FILE_NAME, format=AUDIO_FILE_TYPE)
             # make request to whisper to transcribe the audio
-            audio_file = open("audio.wav", "rb")
-            transcript = client.audio.transcriptions.create(
-                model="whisper-1", file=audio_file
-            )
-            prompt = transcript.text
+            prompt = transcribe_audio(AUDIO_FILE_NAME, client)
 
     if prompt:
         st.session_state.messages.append({"role": "user", "content": prompt})
